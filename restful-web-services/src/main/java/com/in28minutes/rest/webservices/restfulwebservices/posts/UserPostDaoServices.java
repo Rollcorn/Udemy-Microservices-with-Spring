@@ -23,10 +23,12 @@ public class UserPostDaoServices {
     }
 //TODO
     public Post save(Integer userId, Post post) {
+
         if ( userPosts.get(userId) == null) {
-            userPosts.get(userId) = new ArrayList<>();
+            userPosts.set(userId, new ArrayList<Post>());
         }
         userPosts.get(userId).add(post);
+
     }
 
     public Post findOne(int id) {
