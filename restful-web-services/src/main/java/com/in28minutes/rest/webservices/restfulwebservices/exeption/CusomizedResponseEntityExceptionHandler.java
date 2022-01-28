@@ -3,6 +3,7 @@ package com.in28minutes.rest.webservices.restfulwebservices.exeption;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,5 +31,16 @@ public class CusomizedResponseEntityExceptionHandler extends ResponseEntityExcep
                 request.getDescription(false) );
 
         return new ResponseEntity(exeptoinResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatus status,
+                                                                  WebRequest request) {
+
+        ExeptionResponse exeptoinResponse = new ExeptionResponse( new Date(), ex.getMessage(),
+                ex.getBindingResult().toString() );
+
+        return new ResponseEntity(exeptoinResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,8 +1,6 @@
 package com.in28minutes.rest.webservices.restfulwebservices.posts;
 
 import com.in28minutes.rest.webservices.restfulwebservices.exeption.UserNotFoundException;
-import com.in28minutes.rest.webservices.restfulwebservices.user.User;
-import com.in28minutes.rest.webservices.restfulwebservices.user.UserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,34 +10,33 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-public class UserPostResource {
+public class PostResource {
 
     @Autowired
-    private UserPostDaoServices service;
+    private PostDaoService service;
 
-    @GetMapping("/users/{id}/posts")
-    public List<Post> retrieveAllUserPosts() {
-        return service.findAll();
+    @GetMapping("/users/{idUser}/posts")
+    public List<Post> retrieveAllUserPosts(@PathVariable int idUser) {
+        return service.findAll(idUser);
     }
 
-    @GetMapping("/users/{id}")
-    public Post retrieveUser(@PathVariable int id) {
-        Post post = service.findOne(id);
+    @GetMapping("/users/{id}/posts/{post_id}")
+    public Post retrieveUserPosts(@PathVariable int id, @PathVariable int post_id) {
+        Post post = service.findOne(id, post_id);
 
         if(post==null)
-            throw new UserNotFoundException("id-"+ id);
+            throw new UserNotFoundException("User id: "+ id + ", post id: " + post_id);
 
         return post;
     }
 
-
-    @PostMapping("/users")
-    public ResponseEntity<Object> createUser(@RequestBody Post post) {
-        Post savedUserPost = service.save(post);
+    @PostMapping("/users/{id}/posts")
+    public ResponseEntity<Object> createPost( @PathVariable int id , @RequestBody Post post) {
+        Post savedUserPost = service.save(id, post);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path("/{post_id}")
                 .buildAndExpand(savedUserPost.getId()).toUri();
 
         return ResponseEntity.created(location).build();
