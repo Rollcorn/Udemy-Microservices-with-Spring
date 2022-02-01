@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonVersioningController {
 
 //    URI versioning
-    @GetMapping(value="/person/param")
+    @GetMapping(value="v1/person")
     public PersonV1 personV1(){
         return  new PersonV1("Bob Charlie");
     }
 
-    @GetMapping(value="/person/param" )
+    @GetMapping(value="v2/person" )
     public PersonV2 personV2(){
         return new PersonV2(new Name("Bob", "Charlie"));
     }
