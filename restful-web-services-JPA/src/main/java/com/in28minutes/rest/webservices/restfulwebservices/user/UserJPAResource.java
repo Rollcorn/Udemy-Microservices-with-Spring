@@ -2,6 +2,7 @@ package com.in28minutes.rest.webservices.restfulwebservices.user;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import com.in28minutes.rest.webservices.restfulwebservices.exeption.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +17,24 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 
 @RestController
-public class UserResource {
+public class UserJPAResource {
 
     @Autowired
-    private UserDaoService service;
+    private UserRepository userRepository;
 
-    @GetMapping("/users")
+    @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers() {
-        return service.findAll();
+        return userRepository.findAll();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/jpa/users/{id}")
     public EntityModel<User> retrieveUser(@PathVariable int id) {
-        User user = service.findOne(id);
+        Optional<User> user = userRepository.findById(id);
 
-        if(user==null)
+        if(!user.isPresent())
             throw new UserNotFoundException("id-"+ id);
 
-        EntityModel<User> model = EntityModel.of(user);
+        EntityModel<User> model = EntityModel.of(user.get());
         WebMvcLinkBuilder linkToUsers = linkTo(methodOn(this.getClass()).retrieveAllUsers());
 
         model.add(linkToUsers.withRel("all-users"));
@@ -43,9 +44,9 @@ public class UserResource {
 
     // input - details of user
     // output - CREATED & Return the created URI
-    @PostMapping("/users")
+    @PostMapping("/jpa/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-        User savedUser = service.save(user);
+        User savedUser = userRepository.save(user);
 
         // CREATED
         // /user/{id}     savedUser.getId()
@@ -58,15 +59,9 @@ public class UserResource {
 
     }
 
-    @DeleteMapping("/users/{id}")
-    public User deleteUser(@PathVariable int id) {
-        User user = service.deleteById(id);
-
-        if(user==null) {
-            throw new UserNotFoundException("id-" + id);
-        }
-
-        return user;
+    @DeleteMapping("/jpa/users/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userRepository.deleteById(id);
     }
 }
 
