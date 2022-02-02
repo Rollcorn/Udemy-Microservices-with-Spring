@@ -1,12 +1,16 @@
 
 package com.in28minutes.rest.webservices.restfulwebservices.user;
 
+import com.in28minutes.rest.webservices.restfulwebservices.posts.Post;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -22,8 +26,18 @@ public class User {
     @Past
     private Date birthDate;
 
-    protected User() {
+    @OneToMany(mappedBy = "user")
+    private List<Post> post;
 
+    public List<Post> getPost() {
+        return post;
+    }
+
+    public void setPost(List<Post> post) {
+        this.post = post;
+    }
+
+    protected User() {
     }
 
     public User(Integer id, String name, Date birthDate) {

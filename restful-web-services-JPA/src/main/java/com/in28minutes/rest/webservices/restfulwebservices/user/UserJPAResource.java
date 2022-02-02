@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.in28minutes.rest.webservices.restfulwebservices.exeption.UserNotFoundException;
+import com.in28minutes.rest.webservices.restfulwebservices.posts.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -21,6 +22,9 @@ public class UserJPAResource {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    PostRepository postRepository;
 
     @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers() {
@@ -62,6 +66,39 @@ public class UserJPAResource {
     @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
+    }
+
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> retrieveAllUserPosts(@PathVariable int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if(!userOptional.isPresent())
+            throw new UserNotFoundException("id-"+ id);
+
+        return userOptional.get().getPost();
+    }
+
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPost(@PathVariable int id, @RequestBody Post post) {
+
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if(!userOptional.isPresent())
+            throw new UserNotFoundException("id-"+ id);
+
+        User user = userOptional.get();
+
+        post.setUser(user);
+
+        postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(post.getId()).toUri();
+
+        return ResponseEntity.created(location).build();
+
     }
 }
 
