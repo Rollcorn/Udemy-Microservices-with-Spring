@@ -1,4 +1,4 @@
-package com.in28minutes.microservices.limitsservice.controller;
+package com.in28minutes.microservices.limitsservice.limitsservice.controller;
 
 
 import com.in28minutes.microservices.limitsservice.limitsservice.bean.Limits;
